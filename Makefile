@@ -1,4 +1,8 @@
-all: randread burstread seqread disksize-test sizeof
+PROGRAMS=randread burstread seqread disksize-test sizeof
+
+
+all: $(PROGRAMS)
+
 
 randread: randread.o disksize.o
 	gcc -o randread randread.o disksize.o -lrt
@@ -26,6 +30,12 @@ disksize.o: disksize.c
 
 sizeof: sizeof.c
 	gcc -o sizeof sizeof.c
+
 		
 # pl -maxrows 15000 -png -o wd1200jb-random.png access-times-scatter.ploticus
 		
+
+
+.PHONY: clean
+clean:
+	rm -f $(PROGRAMS) *.o
