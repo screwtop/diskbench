@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int main()
 {
 //	printf("sizeof(byte) = %i\n", sizeof(byte));
