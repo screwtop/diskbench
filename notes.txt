@@ -1,0 +1,33 @@
+These programs probably need to be run as root.
+
+On NetBSD, be sure to use the "r" (character special) device when testing.  The block special device seems to give much lower sequential transfer rates.  I read recently (2007-03) that I/O using the block special devices go through the buffer cache (this might have been for Linux).  Indeed, character devices are unbuffered (read/written immediately), whereas the block devices are buffered (and possibly also cached).
+
+TODO: have these bypass the filesystem cache on Linux.
+
+1024 B = 1 kiB = 2 blocks
+2048 B = 2 kiB = 4 blocks
+8192 B = 8 kiB = 16 blocks
+16384 B = 16 kiB = 32 blocks
+32768 B = 32 kiB = 64 blocks
+65536 B = 64 kiB = 128 blocks
+
+wd0 has 488 140 065 sectors
+249 927 713 280 bytes
+
+random() produces numbers in the range 0..2^31-1, or 0..2 147 483 648
+
+On Linux (2.6.??), clock_gettime() requires librt (-lrt).
+
+TODO:
+ - fix programs so that they don't segfault when run with no arguments!
+ - add a "usage" output as well
+
+
+Results:
+
+Atlas 15K on Linux on Zaphod
+
+1 stream: ~100 MiB/s!!!
+2 streams: ~18 MiB/s/stream (~36 MiB/s total throughput)
+3 streams: ~14 MiB/s/stream (~42 MiB/s total throughput)
+

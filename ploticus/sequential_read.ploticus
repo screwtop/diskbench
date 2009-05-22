@@ -1,0 +1,40 @@
+#proc page
+
+#proc getdata
+pathname: @data
+//file: 7200.8-seq.dat
+//file: 7k250-seq.dat
+//file: wd1200jb-seq.dat
+//file: ST38420A-seq.dat
+//file: ST320414A-3EC0B55W-seq.dat
+//file: ST320414A-3EC0B11G-seq.dat
+
+#proc areadef
+areaname: standard
+//rectangle: 1 1 10 10
+//xautorange: datafield=1
+xrange: 0 1
+yrange: 0 100
+//yautorange: datafield=2
+
+#proc xaxis
+label:	Location
+stubs: inc
+//stubs:	datafields=1
+//stubevery: 5
+//stubcull: yes
+tics:	yes
+ticlen: 0.1
+arrow: yes
+
+#proc yaxis
+label: Transfer Rate (MiB/s)
+stubs: inc 10
+tics: yes
+ticlen: 0.1
+arrow: yes
+
+#proc lineplot
+xfield: 2
+yfield: 3
+

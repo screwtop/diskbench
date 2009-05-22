@@ -1,0 +1,43 @@
+#proc page
+
+#proc getdata
+pathname: @data
+//file: 7200.8-random.dat
+//file: 7k250-random.dat
+//file: wd1200jb-random.dat
+//file: ST38420A-random.dat
+//file: ST320414A-3EC0B55W-random.dat
+//file: ST320414A-3EC0B11G-random.dat
+
+#proc areadef
+areaname: standard
+//xautorange: datafield=3
+xrange: 0 1
+yrange: 0 50
+//yautorange: datafield=4
+
+#proc xaxis
+label: Location
+stubs: inc
+//stubs:	datafields=1
+//stubevery: 5
+//stubcull: yes
+tics:	yes
+ticlen: 0.1
+arrow: yes
+
+#proc yaxis
+label: Access Time (ms)
+stubs: inc 5
+tics: yes
+ticlen: 0.1
+arrow: yes
+
+#proc scatterplot
+xfield: 3
+yfield: 4
+//symbol: style=fill shape=circle fillcolor=red
+symbol: style=fill shape=square fillcolor=red radius=0.01
+// dupsleg: yes
+cluster: yes
+
