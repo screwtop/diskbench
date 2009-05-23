@@ -1,0 +1,57 @@
+Building diskbench on cygwin / Windows XP
+
+"-lrt" doesn't work - a Linux-ism?
+
+struct timespec?
+
+_disksize undefined (need to include disksize.o).  The function is defined as extern - is that correct?
+
+randread.c: storage size of 'seed' isn't known (it's a "struct timeval")
+	decimal constant is unsigned only in ISO C90
+
+"make clean" on Cygwin should delete the ".exe" files!
+
+
+
+Portability challenges for diskbench
+
+Likely issues:
+ - timing, especially high-precision timing (although milliseconds are probably adequate given that we're benchmarking mechanical storage devices)
+ - synchronous I/O: as much as possible, we want to test the performance of the storage device, not the cacheing ability of the operating system.
+
+
+Timing:
+
+<time.h> defines timespec, which has components tv_sec and tv_nsec for seconds and nanoseconds respectively.
+<bits/time.h> on Linux defines timeval, which has tv_sec and tv_usec for seconds and microseconds respectively.
+
+
+
+Synchronous I/O:
+
+O_DSYNC not available in Cygwin?
+	open()ing a file with O_DSYNC means that write operations return when the data (but not necessarily the metadata) have been written.
+	Note: I believe this may not be honoured on many ATA hard disk drives.
+
+	NetBSD:	O_DSYNC:Y	O_DIRECT:Y	directio():
+
+O_DIRECT
+	NetBSD: Y
+	Linux: 2.6.10 and later
+
+O_SYNC
+	Linux: Y
+	Cygwin: Y
+
+O_DSYNC
+	Linux: Y, but is actually synonymous with O_SYNC (and O_RSYNC).
+	Cygwin: N
+
+Linux raw(8) interface: deprecated
+
+Mac OS X: call fnctl() with F_NOCACHE
+
+
+Ideally we would use O_DSYNC for the benchmarking programs, but the overhead of writing metadata and inode data is probably negligible.  It looks like O_SYNC will be appropriate.
+
+For the "rewrite" program, we want to ensure the integrity of the rewritten data, so synchronous writes will be necessary there also.  O_DSYNC or O_SYNC?
