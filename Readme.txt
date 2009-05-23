@@ -28,7 +28,8 @@ The Utilities
 Note
 
    You will probably have to run these commands as root in order
-   to access the raw disk devices.
+   to access the raw disk devices. The three main benchmarking
+   programs perform non-destructive, read-only testing.
 
    The output of these commands is tab-separated text, and should
    be easy to use in producing graphs (recommended!).
@@ -66,8 +67,8 @@ Note
           retrieved repeatedly by the system, especially when
           subsequent reads happen soon after the initial read.
 
-   The commands are intended to operate on entire disk drive, so
-   the argument will usually be the special device file for the
+   The commands are intended to operate on an entire disk drive,
+   so the argument will usually be the special device file for the
    raw, whole disk you wish to test (e.g. /dev/sda). However, you
    can also test individual partitions (e.g. /dev/sda1) or
    individual files (~/Video/Wedding.avi), in which case the
