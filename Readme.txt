@@ -1,7 +1,6 @@
 This is diskbench, a collection of simple low-level disk benchmarks implemented as command-line C programs.
 
-NOTE: this is currently a work-in-progress and should be considered alpha-quality.  Don't expect it to work, and use at your 
-own risk!
+NOTE: this is currently a work-in-progress and should be considered alpha-quality.  Don't expect it to work, and use at your own risk!
 
 
 The Utilities:
@@ -17,10 +16,7 @@ The Utilities:
              Burst (cache) reads occur when the same data are retrieved repeatedly by the system, especially when subsequent reads happen soon after the initial read.
 
 
-The commands are intended to operate on entire devices, so the argument will usually be the special device file for the 
-disk you wish to test (e.g. '/dev/sda' or '/dev/rsd0d').  However, you can also test individual partitions (e.g. 
-'/dev/sda1') or individual files ('~/Video/Wedding.avi'), in which case the apparent performance will probably be much 
-greater[1], and not comparable with other systems.
+The commands are intended to operate on entire devices, so the argument will usually be the special device file for the whole disk you wish to test (e.g. '/dev/sda' or '/dev/rsd0d').  However, you can also test individual partitions (e.g. '/dev/sda1') or individual files ('~/Video/Wedding.avi'), in which case the apparent performance will probably be much greater[1], and not comparable with other systems.
 
 If you have no idea what device filename to use, try one of these:
 	Linux     /dev/sda OR /dev/hda
@@ -31,17 +27,10 @@ If you have no idea what device filename to use, try one of these:
 You will probably have to run these commands as root in order to access the raw disk devices.
 
 
-Also included is a simple program 'rewrite', which will read and write a disk/partition/file, leaving it unchanged, but 
-potentially causing the disk drive to detect and re-map any disk sectors that may be in the process of going bad.  This is 
-no substitute for a backup, but may be useful anyway.  Because it does one sector at a time, expect it to be extremely 
-slow.  For cases in which sectors have already become unreadable, try ddrescue (another fine GNU utility from the Free 
-Software Foundation).
+Also included is a simple program 'rewrite', which will read and write a disk/partition/file, leaving it unchanged, but potentially causing the disk drive to detect and re-map any disk sectors that may be in the process of going bad.  This is no substitute for a backup, but may be useful anyway.  Because it does one sector at a time, expect it to be extremely slow.  For cases in which sectors have already become unreadable, try ddrescue (another fine GNU utility from the Free Software Foundation).
 
 
-[1] You can sacrifice capacity for performance when partitioning a drive.  The data at the outside edge of a disk will 
-generally experience faster sequential data rates (perhaps 2x the speed of the inside edge), so using a small slice of 
-the disk will effectively give a small, fast disk.  This will also benefit access times and random I/O performance, since 
-the read/write head need only move within a much smaller region of the disk.
+[1] You can sacrifice capacity for performance when partitioning a drive.  The data at the outside edge of a disk will generally experience faster sequential data rates (perhaps 2x the speed of the inside edge), so using a small slice of the disk will effectively give a small, fast disk.  This will also benefit access times and random I/O performance, since the read/write head need only move within a much smaller region of the disk.
 
 
 Compatibility:
