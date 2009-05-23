@@ -19,6 +19,12 @@ seqread: seqread.o disksize.o
 seqread.o: seqread.c
 	gcc -c -o seqread.o seqread.c
 
+rewrite: rewrite.o disksize.o
+	gcc -o rewrite rewrite.o disksize.o
+
+rewrite.o: rewrite.c
+	gcc -c -o rewrite.o rewrite.c
+
 disksize-test: disksize-test.o disksize.o
 	gcc -o disksize-test disksize-test.o disksize.o
 
