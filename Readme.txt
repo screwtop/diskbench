@@ -1,5 +1,8 @@
 This is diskbench, a collection of simple low-level disk benchmarks implemented as command-line C programs.
 
+NOTE: this is currently a work-in-progress and should be considered alpha-quality.  Don't expect it to work, and use at your 
+own risk!
+
 
 The Utilities:
 
@@ -16,12 +19,14 @@ The Utilities:
 
 The commands are intended to operate on entire devices, so the argument will usually be the special device file for the 
 disk you wish to test (e.g. '/dev/sda' or '/dev/rsd0d').  However, you can also test individual partitions (e.g. 
-'/dev/sda1') or individual files ('~/').
+'/dev/sda1') or individual files ('~/Video/Wedding.avi'), in which case the apparent performance will probably be much 
+greater[1], and not comparable with other systems.
 
 If you have no idea what device filename to use, try one of these:
-	Linux	/dev/sda OR /dev/hda
-	NetBSD /dev/rwd0d OR /dev/rsd0d
+	Linux     /dev/sda OR /dev/hda
+	NetBSD    /dev/rwd0d OR /dev/rsd0d
 	Mac OS X  /dev/???
+	MINIX 3   /dev/c0d0p0s0???
 
 You will probably have to run these commands as root in order to access the raw disk devices.
 
@@ -33,9 +38,17 @@ slow.  For cases in which sectors have already become unreadable, try ddrescue (
 Software Foundation).
 
 
+[1] You can sacrifice capacity for performance when partitioning a drive.  The data at the outside edge of a disk will 
+generally experience faster sequential data rates (perhaps 2x the speed of the inside edge), so using a small slice of 
+the disk will effectively give a small, fast disk.  This will also benefit access times and random I/O performance, since 
+the read/write head need only move within a much smaller region of the disk.
+
+
 Compatibility:
 
 My intention is to have the diskbench programs compile and run on NetBSD, Linux, Cygwin/Windows, Mac OS X, and MINIX 3.  Other POSIX compliant systems should be easy to support (they may even just work).
+
+Linux kernel version 2.6.10 or later are necessary for O_DIRECT support.
 
 Currently diskbench should work on NetBSD, Linux and Cygwin systems, since I have ready access to these and can test them.
 
