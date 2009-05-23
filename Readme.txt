@@ -8,6 +8,7 @@ utilities.
 
    Introduction
    The Utilities
+   Interpreting the Results
    Compatibility
 
 Introduction
@@ -18,9 +19,9 @@ Introduction
 
 Caution
 
-   Note: this is currently a work-in-progress and should be
-   considered alpha-quality. Don't expect it to work, and use at
-   your own risk!
+   This is currently a work-in-progress and should be considered
+   alpha-quality. Don't expect it to work, and use at your own
+   risk!
 
 The Utilities
 
@@ -35,9 +36,8 @@ Note
    seqread
           Performs a series of large sequential read operations
           across the device, reporting the transfer rate for each.
-          This will give and indication of the sustained bandwidth
-          of the disk (and whatever connects it to the operating
-          system).
+          This will give an indication of the sustained bandwidth
+          of the disk.
 
           This benchmark may be more relevant for applications
           dealing with individual large files, such as audio/video
@@ -84,14 +84,30 @@ Note
      * NetBSD: /dev/rwd0d or /dev/rsd0d
 
    Also included is a simple program rewrite, which will read and
-   write a disk/partition/file, leaving it unchanged, but
-   potentially causing the disk drive to detect and re-map any
-   disk sectors that may be in the process of going bad. This is
-   no substitute for a backup, but may be useful anyway. Because
-   it does one sector at a time, expect it to be extremely slow.
-   For cases in which sectors have already become unreadable, try
+   write a disk/partition/file, leaving the data unchanged, but
+   potentially causing the drive to detect and re-map any sectors
+   that may be in the process of going bad. This is no substitute
+   for a backup, of course, but may be useful anyway. Because it
+   does one sector at a time, expect it to be extremely slow. For
+   cases in which sectors have already become unreadable, try
    ddrescue (another fine GNU utility from the Free Software
    Foundation).
+
+Interpreting the Results
+
+   There are lies, damned lies, and statistics, so the saying
+   goes. It is virtually impossible to test the performance of one
+   component of a computer system without being affected by other
+   components. Disk benchmarks will be affected by the interface:
+   for example, the bandwidth bottleneck for USB-connected drives
+   is probably the interface, not the drive. On some systems, it
+   may be impossible to avoid the effects of data caches and
+   buffers, in particular those provided by the operating system,
+   host adapter (if present), and the disk drive itself. Bridges
+   in external drive enclosures may affect latency and bandwidth.
+   However, under ideal conditions and if you keep your skeptical
+   hat on, you should be able to get results that are fairly close
+   to the mark and reproducible.
 
 Compatibility
 

@@ -1,4 +1,6 @@
-PROGRAMS=randread burstread seqread disksize-test sizeof
+PROGRAMS=randread burstread seqread disksize-test rewrite sizeof
+
+DOCS=Readme.txt Readme.html
 
 
 all: $(PROGRAMS)
@@ -45,3 +47,11 @@ sizeof: sizeof.c
 .PHONY: clean
 clean:
 	rm -f $(PROGRAMS) *.o
+
+doc: $(DOCS)
+
+Readme.txt: Readme.xml
+	xmlto txt Readme.xml
+
+Readme.html: Readme.xml
+	xmlto html-nochunks Readme.xml
