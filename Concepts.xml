@@ -1,0 +1,53 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<article>
+	<title>Hard Disk Drive Benchmarking</title>
+
+	<sect1>
+		<title>Introduction</title>
+
+		<para>This is a supplementary document for the <package>diskbench</package> package describing some of the concepts and caveats relating to disk benchmarking, both in general and with specific reference to the <package>diskbench</package> utilities.</para>
+
+		<caution><simpara><package>diskbench</package> is currently a work-in-progress and should be considered alpha-quality.  Don&#8217;<!--&rsquo;--><!--&apos;--><!--apos/--><!--apostrophe/-->t expect it to work, and use at your own risk!</simpara></caution>
+	</sect1>
+
+
+	<sect1><title>Low-Level Performance Metrics</title>
+
+		<para>There are three main low-level hard disk drive performance metrics: the access time, the sequential transfer rate, and the burst data rate.  These will be discussed in the following sections.</para>
+		
+		<sect2><title>Access Time, Seek Time, and Rotational Latency</title>
+			<para>Access time is a measure of latency: how long must you wait before the drive begins reading (or writing) the data being transferred?  Access time consists of two components: the seek time, which is how long the read-write head takes to reach the requested track, and rotational latency, which is how long before the requested sector passes undernead the read/write head.  Rotational latency is a function of the rotational speed of the drive<!--TODO: list common RPM values here -->, and is uniformly distributed.  Seek time is dependent on the size of the disk and the engineering of the read/write head actuator.</para>
+			<para>The drive is essentially doing no useful work during a disk access, since it cannot read from or write to the disk during this time.  What&#8217;s worse, disk accesses can incur delays on the order of 10 milliseconds (around 30 million CPU clock cycles on 2009 technology).</para>
+		</sect2>
+
+		<sect2><title>Sequential or Sustained Transfer Rate</title>
+			<para>The sequential transfer rate (STR) is a measure of bandwidth or data rate: how fast can data be transferred to or from the physical disk medium without interruption.  STR can be thought of as the maximum sustainable transfer rate supported by the drive.</para>
+			<para>STR is probably the most familiar measure to computer users, and is commonly measured in megabytes per second (MB/s), or megabinary bytes per second (MiB/s).<!-- TODO: manufacturer's specs, megabits per second, the internal drive interface.-->  Sequential transfers are only observed when the data being read are physically contiguous on the disk, which usually only happens when a single process is accessing a single file on the disk.  A single drive (2009 era) may be able to sustain in excess of 100 MiB/s, but the aggregate and per-process throughput will drop considerably as other, concurrent reads are added.</para>
+		</sect2>
+		
+		<sect2><title>Burst or Cache Read/Write</title>
+			<para>This is primarily a measure of the external interface of the disk drive, e.g. Serial ATA, SCSI, SAS.  In most drives, data pass through a memory buffer/cache on the drive electronics in the process of being read or written.  This memory is usually dynamic RAM (DRAM), and therefore much faster that the physical disk medium.  On reads, the drive can read ahead, bringing sectors that are likely to be requested into the buffer/cache in anticipation of being requested.  On writes, the data can be written into the buffer/cache, and flushed to the physical medium at a later time.  The buffer/cache decouples the internal and external drive interfaces, improving throughput by allowing the two to operate asynchronously.</para>
+		</sect2>
+
+		<!-- TODO: reinstate the following paragraph, somehow (the DTD rejects it). -->
+		<!--para>Understanding the impact of these low-level characteristics and how they affect disk performance under different workloads is important for tuning a system.  Generally, a tuning strategy will aim to store related data together, in contiguous chunks, so that they can be accessed using fast sequential transfers.  Minimising seeks due to non-contiguous data will minimise the disk drive <quote>down-time</quote> while the heads are repositioned.  These are really two sides of the same coin.  If workloads involve parallelism, such that significant disk queues build up, spreading the workload over multiple drives (e.g. by using RAID or multiple independent drives) can potentially increase throughput.  Some RAID modes can also help improve throughput under sequential workloads.</para-->
+
+		<!-- TODO: links to storagereview.com, etc. -->
+	</sect1>
+
+	
+	<sect1><title>Performing Benchmarking, and Interpreting the Results</title>
+		<!-- Suggest using the benchmarks on disks with no mounted partitions on them, to ensure that no other I/O is happening.  Light CPU loading and no swapping at the time of testing also.  SMART turned off, I guess, too.-->
+	
+		<para>There are lies, damned lies, and statistics, so the saying goes.  It is virtually impossible to test the performance of one component of a computer system without being affected by other components.  Disk benchmarks will be affected by the interface: for example, the bandwidth bottleneck for USB-connected drives is probably the interface, not the drive.  On some systems, it may be impossible to avoid the effects of data caches and buffers, in particular those provided by the operating system, host adapter (if present), and the disk drive itself.  Bridges in external drive enclosures may affect latency and bandwidth.  However, under ideal conditions and if you keep your skeptical hat on, you should be able to get results that are fairly close to the mark and reproducible.</para>
+	</sect1>
+	
+
+	<!--sect1><title>Graphing the Results</title>
+	</sect1-->
+	
+	
+</article>
+
+

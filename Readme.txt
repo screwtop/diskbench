@@ -7,8 +7,8 @@ utilities.
    Table of Contents
 
    Introduction
+   Design Objectives
    The Utilities
-   Interpreting the Results
    Compatibility
 
 Introduction
@@ -22,6 +22,55 @@ Caution
    This is currently a work-in-progress and should be considered
    alpha-quality. Don't expect it to work, and use at your own
    risk!
+
+Design Objectives
+
+   The design objectives for diskbench have always been very
+   modest. I don't consider myself a C programmer, but it was
+   clearly a good language for the job.
+
+   The main design objectives:
+
+   Cover the basics.
+          The tests should cover the three basic low-level metrics
+          for mechanical hard disk drive performance: access
+          times, sequential transfer rate, and interface speed.
+          These metrics allow different drives to be compared
+          quickly and easily, but has the drawback of not taking
+          into account the caching algorithms used by the drive
+          (sometimes referred to as the drive firmware). For
+          real-world application workloads, especially in desktop
+          environments where disk activity is triggered by a
+          single user and tends to feature highly localised
+          patterns of access, the cacheing behaviour of the drive
+          can have a major effect on the overall speed (IOPS:
+          input/output operations per second).
+
+   Be non-destructive.
+          The files being tested are opened in read-only mode, so
+          it should be impossible to damage or erase any data
+          using these tools. You can therefore happily use these
+          benchmarks on partitioned disks with data on them
+          (although if other system processes are using the disk,
+          the results will not be pure). This has the drawback
+          that you cannot test the performance of write
+          operations, which are extremely important in many
+          applications. The type of drive, interface, or
+          configuration (e.g. RAID) can have a significant effect
+          on the relative write-vs.-read performance, which
+          diskbench will not help you identify.
+
+   Be simple.
+          The measurements are conceptually simple; the programs
+          should be simple as well. Complexity leads to overhead
+          and fuzzier benchmark results.
+
+   Be portable.
+          I wanted to be able to run these benchmarks on a variety
+          of different systems that I use frequently. The programs
+          should be quite portable due to their simplicity, the
+          use of C as an implementation language, and the use of
+          standard library calls.
 
 The Utilities
 
@@ -93,22 +142,6 @@ Note
    cases in which sectors have already become unreadable, try
    ddrescue (another fine GNU utility from the Free Software
    Foundation).
-
-Interpreting the Results
-
-   There are lies, damned lies, and statistics, so the saying
-   goes. It is virtually impossible to test the performance of one
-   component of a computer system without being affected by other
-   components. Disk benchmarks will be affected by the interface:
-   for example, the bandwidth bottleneck for USB-connected drives
-   is probably the interface, not the drive. On some systems, it
-   may be impossible to avoid the effects of data caches and
-   buffers, in particular those provided by the operating system,
-   host adapter (if present), and the disk drive itself. Bridges
-   in external drive enclosures may affect latency and bandwidth.
-   However, under ideal conditions and if you keep your skeptical
-   hat on, you should be able to get results that are fairly close
-   to the mark and reproducible.
 
 Compatibility
 

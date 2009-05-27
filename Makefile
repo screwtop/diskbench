@@ -1,6 +1,6 @@
 PROGRAMS=randread burstread seqread disksize-test rewrite sizeof
 
-DOCS=Readme.txt Readme.html
+DOCS=Readme.txt Readme.html Concepts.txt Concepts.html
 
 
 all: $(PROGRAMS)
@@ -55,3 +55,9 @@ Readme.txt: Readme.xml
 
 Readme.html: Readme.xml
 	xmlto html-nochunks Readme.xml
+
+Concepts.txt: Concepts.xml
+	xmlto txt Concepts.xml
+
+Concepts.html: Concepts.xml
+	xmlto html-nochunks Concepts.xml
