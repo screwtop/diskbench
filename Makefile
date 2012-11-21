@@ -1,4 +1,4 @@
-PROGRAMS=randread burstread seqread disksize-test rewrite sizeof
+PROGRAMS=randread burstread seqread rampread disksize-test rewrite sizeof
 
 DOCS=Readme.txt Readme.html Concepts.txt Concepts.html
 
@@ -11,9 +11,18 @@ randread: randread.o disksize.o
 
 randread.o: randread.c
 	gcc -c -o randread.o randread.c
+
+
+rampread: rampread.o disksize.o
+	gcc -o rampread rampread.o disksize.o -lrt -lm
+
+rampread.o: rampread.c
+	gcc -c -o rampread.o rampread.c
+
 	
 burstread: burstread.c
 	gcc -O2 -o burstread burstread.c -lrt
+
 
 seqread: seqread.o disksize.o
 	gcc -o seqread seqread.o disksize.o -lrt
@@ -21,11 +30,13 @@ seqread: seqread.o disksize.o
 seqread.o: seqread.c
 	gcc -c -o seqread.o seqread.c
 
+
 rewrite: rewrite.o disksize.o
 	gcc -o rewrite rewrite.o disksize.o
 
 rewrite.o: rewrite.c
 	gcc -c -o rewrite.o rewrite.c
+
 
 disksize-test: disksize-test.o disksize.o
 	gcc -o disksize-test disksize-test.o disksize.o
