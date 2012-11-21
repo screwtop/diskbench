@@ -14,15 +14,18 @@
 */
 
 #define _GNU_SOURCE
+#define _LARGEFILE64_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>	// For malloc()
 #include <fcntl.h>	// for open()
 #include <unistd.h>	// for lseek()
 #include <time.h>
+#include <errno.h>
 
-
-#define SECTOR_SIZE 512L
+// NOTE: This won't always be true!  Storage industry is currently (2010) preparing to move to 4 kiB sectors.
+#define SECTOR_SIZE 4096L
+//#define SECTOR_SIZE 512L
 
 extern off_t disksize(char* filename);
 
@@ -45,6 +48,7 @@ int main(int argc, char* argv[])
 	float disk_sampling_factor = 0.0001;
 	
 	int transfer_size_in_sectors = 32768;
+//	int transfer_size_in_sectors = 4096; // To match hdparm's 2 MiB, in the hope it'll align nicely for O_DIRECT.
 //	transfer_size_in_sectors = transfer_size_in_sectors <= zone_size_in_sectors ? transfer_size_in_sectors : zone_size_in_sectors;	// To be user-specified.  Needs to be at least as big as the drive buffer cache, but by how wuch, ideally?  Should also be less than the zone size.
 //	int transfer_size_in_sectors = zone_size_in_sectors * zone_sampling_factor;	// I think there's also a limit to how much can be transferred in a single request, so this should also be truncated to whatever that limit happens to be.
 //	int transfer_size_in_sectors = disk_size_in_sectors * disk_sampling_factor <= zone_size_in_sectors ? disk_size_in_sectors * disk_sampling_factor : zone_size_in_sectors;	// Newer sampling scheme, based on proportion of entire disk to be checked.  This should be forced to be less than the zone size.
@@ -73,14 +77,25 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "                   %li MiB\n", transfer_size_in_bytes / 1024 / 1024);
 	fprintf(stderr, "\n");
 
-	// Heading for output:	
+	// Heading for output:
 	fprintf(stderr, "zone(sector)\tzone(decimal)\trate(MiB/s)\n");
 	
 	long long zone_midpoint_sector = 0;
 	
+	int read_result = 0, return_code = 0;
+	
+	// Also, perhaps O_LARGEFILE?
+//	int fd = open(filename, O_RDONLY | O_DIRECT | O_LARGEFILE);
 //	int fd = open(filename, O_RDONLY | O_DIRECT | O_SYNC);
 //	int fd = open(filename, O_RDONLY | O_DIRECT);
 	int fd = open(filename, O_RDONLY);
+
+        // NOTE: consider sys_fadvise64_64() here, perhaps with FADV_NOREUSE.
+
+	// TODO: Check that the file was opened successfully, and bail out if not.
+	if (fd == -1) {return_code = errno; perror("Error open()ing file"); return return_code;}
+
+//	sys_fadvise64_64();
 	
 	for (zone = 0; zone < zone_count; zone++)
 	{
@@ -96,10 +111,16 @@ int main(int argc, char* argv[])
 		
 		// Note: fseek() location is in bytes.  How do we do this on 32-bit systems?
 		lseek(fd, (zone_midpoint_sector - transfer_size_in_sectors / 2.0) * SECTOR_SIZE, SEEK_SET);
+	//	perror("lseek() status");
 		
 		// Read a big chunk of data of a known size in one I/O:
-		read(fd, buf, transfer_size_in_bytes);
+		// NOTE: Linux has alignment restrictions on direct I/O.  These may be highly variable, and difficult to determine/comply with.  TODO: investigate, try.  512 B seems to be common.  Does the file also have to be so aligned?
+		read_result = read(fd, buf, transfer_size_in_bytes);
 		//fread(buf, transfer_size_in_bytes, 1, fd);
+
+	//	fprintf(stderr, "\n%i bytes read\n", read_result);
+
+		if (read_result < 0) {return_code = errno; perror("Error read()ing disk/file"); fprintf(stderr, "\n%i bytes reported as read\n", read_result); return return_code;}
 
 		// Record the time after finishing to determine elapsed time.
 		clock_gettime(CLOCK_REALTIME, &time1);

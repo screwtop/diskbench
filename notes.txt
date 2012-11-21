@@ -31,3 +31,9 @@ Atlas 15K on Linux on Zaphod
 2 streams: ~18 MiB/s/stream (~36 MiB/s total throughput)
 3 streams: ~14 MiB/s/stream (~42 MiB/s total throughput)
 
+--
+
+Some possibly relevant things for optical media:
+CDROM_SELECT_SPEED
+GPCMD_SET_SPEED
+GPCMD_SET_STREAMING

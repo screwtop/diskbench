@@ -16,6 +16,7 @@
 // #include <sys/time.h>
 
 
+//#define SECTOR_SIZE 4096
 #define SECTOR_SIZE 512
 
 // See random (3)
