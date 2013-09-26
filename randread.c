@@ -15,6 +15,8 @@
 #include <time.h>
 // #include <sys/time.h>
 
+#include "diskbench_timing.h"
+#include "disksize.h"
 
 //#define SECTOR_SIZE 4096
 #define SECTOR_SIZE 512
@@ -22,7 +24,7 @@
 // See random (3)
 #define MAX_RAND_INT 2147483648
 
-extern off_t disksize(char* filename);
+//extern off_t disksize(char* filename);
 
 
 int main(int argc, char* argv[])
@@ -30,7 +32,7 @@ int main(int argc, char* argv[])
 	char* filename = argv[1];
 	off_t disk_size_in_bytes = disksize(filename);
 	int i;
-	struct timespec time0, time1;
+	double start_time, end_time;
 	long disk_size_in_sectors = disk_size_in_bytes / SECTOR_SIZE;
 	int transfer_size_in_sectors = 1;	// Probably doesn't make any sense to be anything other than 1.  Except maybe 64 or 128.
 	long transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
@@ -59,8 +61,8 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "Disk size: %li GiB\n", disk_size_in_bytes / 1024 / 1024 / 1024);
 	fprintf(stderr, "           %li MiB\n", disk_size_in_bytes / 1024 / 1024);
 	fprintf(stderr, "           %li kiB\n", disk_size_in_bytes / 1024);
-	fprintf(stderr, "           %lli bytes\n", disk_size_in_bytes);
-	fprintf(stderr, "           %li %li-byte sectors\n\n", disk_size_in_sectors, SECTOR_SIZE);
+	fprintf(stderr, "           %lli bytes\n", (long long int)disk_size_in_bytes);
+	fprintf(stderr, "           %li %i-byte sectors\n\n", disk_size_in_sectors, SECTOR_SIZE);
 	
 	for (i = 0; i < repetitions; i++)
 	{
@@ -70,14 +72,14 @@ int main(int argc, char* argv[])
 		printf("%li", sector);
 
 		// Byte being sought:
-		printf("\t%lli", sector * (long)SECTOR_SIZE);
+		printf("\t%lli", sector * (long long int)SECTOR_SIZE);
 
 		// Location as a fraction of the entire drive space:
 		printf("\t%f", (double)sector / (double)disk_size_in_sectors);
 
 		
 		// Check the system time before doing the operation:
-		clock_gettime(CLOCK_REALTIME, &time0);
+		start_time = seconds_since_epoch();
 		
 		// Note: fseek() location is in bytes.
 		lseek(fd, sector * (long)SECTOR_SIZE, SEEK_SET);
@@ -86,14 +88,15 @@ int main(int argc, char* argv[])
 		read(fd, buf, transfer_size_in_bytes);
 
 		// Record the time after finishing to determine elapsed time.
-		clock_gettime(CLOCK_REALTIME, &time1);
-		
-		elapsed_time_in_seconds = (double)(time1.tv_sec - time0.tv_sec) + (double)(time1.tv_nsec - time0.tv_nsec) / 1000000000.0;
+		end_time = seconds_since_epoch();
+	
+		elapsed_time_in_seconds = end_time - start_time;
 		
 //		printf("; elapsed = %i s", time1.tv_sec - time0.tv_sec);
 		printf("\t");
 		// Print elapsed time in milliseconds:
-		printf("%f", 1000 * ((double)(time1.tv_sec - time0.tv_sec) + (double)(time1.tv_nsec - time0.tv_nsec) / 1000000000));
+		printf("%f", elapsed_time_in_seconds * 1000.0);
+	//	printf("%f", 1000 * ((double)(time1.tv_sec - time0.tv_sec) + (double)(time1.tv_nsec - time0.tv_nsec) / 1000000000));
 
 		// Print throughput in MiB/s:
 		printf("\t");

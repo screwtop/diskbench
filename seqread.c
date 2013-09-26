@@ -23,6 +23,9 @@
 #include <time.h>
 #include <errno.h>
 
+#include "diskbench_timing.h"
+
+
 // NOTE: This won't always be true!  Storage industry is currently (2010) preparing to move to 4 kiB sectors.
 #define SECTOR_SIZE 4096L
 //#define SECTOR_SIZE 512L
@@ -56,7 +59,7 @@ int main(int argc, char* argv[])
 	
 	long transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
 	
-	struct timespec time0, time1;
+	double start_time, end_time;
 
 	int zone = 0;
 	
@@ -107,7 +110,7 @@ int main(int argc, char* argv[])
 		printf("\t%f", (double)zone_midpoint_sector / (double)disk_size_in_sectors);
 			
 		// Check the system time before doing the operation:
-		clock_gettime(CLOCK_REALTIME, &time0);
+		start_time = seconds_since_epoch();
 		
 		// Note: fseek() location is in bytes.  How do we do this on 32-bit systems?
 		lseek(fd, (zone_midpoint_sector - transfer_size_in_sectors / 2.0) * SECTOR_SIZE, SEEK_SET);
@@ -123,10 +126,10 @@ int main(int argc, char* argv[])
 		if (read_result < 0) {return_code = errno; perror("Error read()ing disk/file"); fprintf(stderr, "\n%i bytes reported as read\n", read_result); return return_code;}
 
 		// Record the time after finishing to determine elapsed time.
-		clock_gettime(CLOCK_REALTIME, &time1);
+		end_time = seconds_since_epoch();
 		
 		// Average transfer rate for the transfer is transfer size / elapsed time.  MiB/s is probably an appropriate unit.
-		printf("\t%f", (double)transfer_size_in_bytes / ((double)(time1.tv_sec - time0.tv_sec) + (double)(time1.tv_nsec - time0.tv_nsec) / 1000000000.0) / 1024.0 / 1024.0);
+		printf("\t%f", (double)transfer_size_in_bytes / (end_time - start_time) / 1024.0 / 1024.0);
 //		fprintf(stderr, "\t[%f % done]", (double)zone / (double)zone_count * 100.0);
 		printf("\n");
 	}

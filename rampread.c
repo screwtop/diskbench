@@ -15,6 +15,8 @@
 #include <time.h>
 // #include <sys/time.h>
 
+#include "diskbench_timing.h"
+
 
 // TODO: should this be varied automatically according to the underlying hardware?  At least parameterised on the command line.
 //#define SECTOR_SIZE 4096
@@ -23,7 +25,7 @@
 // These are in sectors, not bytes:
 // Hm, but maybe they should be in exponents of base 2, to make a for loop easier to write.
 #define START_TRANSFER_SIZE_EXPONENT 0
-#define END_TRANSFER_SIZE_EXPONENT 16
+#define END_TRANSFER_SIZE_EXPONENT 20
 //#define START_TRANSFER_SIZE 64
 //#define END_TRANFER_SIZE 32768
 
@@ -38,13 +40,13 @@ int main(int argc, char* argv[])
 	char* filename = argv[1];
 	off_t disk_size_in_bytes = disksize(filename);
 	int i;
-	struct timespec time0, time1;
+	double start_time, end_time;
 	long disk_size_in_sectors = disk_size_in_bytes / SECTOR_SIZE;
 	int transfer_size_in_sectors = 1 << START_TRANSFER_SIZE_EXPONENT;	// Probably doesn't make any sense to be anything other than 1.  Except maybe 64 or 128.
 	long transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
 	// For rampread, we probably want to vary this according to the transfer size so that it takes a similar amount of time for each size.
 	int transfer_size_exponent = 0;
-	double time_limit_in_seconds = 1.0;	// per sector size iteration
+	double time_limit_in_seconds = 15.0;	// per sector size iteration
 	int repetitions = 0;
 
 	struct timeval seed;
@@ -92,7 +94,7 @@ int main(int argc, char* argv[])
 
 		// Check the system time before doing all the reads:
 		elapsed_time_in_seconds = 0.0;
-		clock_gettime(CLOCK_REALTIME, &time0);
+		start_time = seconds_since_epoch();
 
 		// ...performing a random pattern of reads of a particular size
 		// TODO: maybe have this a while loop and exit after a certain amount of time has passed.
@@ -109,9 +111,9 @@ int main(int argc, char* argv[])
 
 			// Record the time after finishing all the reads to determine the elapsed time.
 			// TODO: consider the computational time incurred by this?  I'm guessing it's probably negligible, but...
-			clock_gettime(CLOCK_REALTIME, &time1);
+			end_time = seconds_since_epoch();
 
-			elapsed_time_in_seconds = (double)(time1.tv_sec - time0.tv_sec) + (double)(time1.tv_nsec - time0.tv_nsec) / 1000000000.0;
+			elapsed_time_in_seconds = end_time - start_time;
 
 			repetitions++;
 		}
@@ -122,7 +124,7 @@ int main(int argc, char* argv[])
 		printf("\t");
 		printf("%li B", transfer_size_in_bytes);
 		printf("\t");
-		printf("%f ms", 1000.0 * ((double)(time1.tv_sec - time0.tv_sec) + (double)(time1.tv_nsec - time0.tv_nsec) / 1000000000.0));
+		printf("%f ms", 1000.0 * elapsed_time_in_seconds);
 		printf("\t");
 		printf("%f MiB/s", (double)repetitions * (double)transfer_size_in_bytes / elapsed_time_in_seconds / 1024.0 / 1024.0);
 		printf("\t");
