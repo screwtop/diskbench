@@ -12,9 +12,11 @@
 #include <stdlib.h>	// For malloc()
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdint.h>
 #include <time.h>
 // #include <sys/time.h>
 
+#include "disksize.h"
 #include "diskbench_timing.h"
 
 
@@ -31,8 +33,6 @@
 
 // See random (3)
 #define MAX_RAND_INT 2147483648
-
-extern off_t disksize(char* filename);
 
 
 int main(int argc, char* argv[])
@@ -74,8 +74,8 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "Disk size: %li GiB\n", disk_size_in_bytes / 1024 / 1024 / 1024);
 	fprintf(stderr, "           %li MiB\n", disk_size_in_bytes / 1024 / 1024);
 	fprintf(stderr, "           %li kiB\n", disk_size_in_bytes / 1024);
-	fprintf(stderr, "           %lli bytes\n", disk_size_in_bytes);
-	fprintf(stderr, "           %li %li-byte sectors\n\n", disk_size_in_sectors, SECTOR_SIZE);
+	fprintf(stderr, "           %jd bytes\n", (intmax_t)disk_size_in_bytes);
+	fprintf(stderr, "           %li %i-byte sectors\n\n", disk_size_in_sectors, SECTOR_SIZE);
 	
 
 	// Loop through transfer sizes...
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
 		// print statistics on the run for the current tranfer size:
 //		printf("transfer size: %li sectors (%li bytes), repetitions = %li\t", transfer_size_in_sectors, transfer_size_in_bytes, repetitions);
-		printf("%li sectors", transfer_size_in_sectors);
+		printf("%i sectors", transfer_size_in_sectors);
 		printf("\t");
 		printf("%li B", transfer_size_in_bytes);
 		printf("\t");

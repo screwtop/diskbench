@@ -20,17 +20,16 @@
 #include <stdlib.h>	// For malloc()
 #include <fcntl.h>	// for open()
 #include <unistd.h>	// for lseek()
+#include <stdint.h>	// for intmax_t
 #include <time.h>
 #include <errno.h>
 
 #include "diskbench_timing.h"
 
 
-// NOTE: This won't always be true!  Storage industry is currently (2010) preparing to move to 4 kiB sectors.
+// NOTE: The 512-byte sector size assumption won't always be true!  Storage industry is currently (2010) preparing to move to 4 kiB sectors.
 #define SECTOR_SIZE 4096L
 //#define SECTOR_SIZE 512L
-
-extern off_t disksize(char* filename);
 
 
 int main(int argc, char* argv[])
@@ -66,15 +65,15 @@ int main(int argc, char* argv[])
 	char * buf = malloc(transfer_size_in_bytes);
 
 	fprintf(stderr, "\nAbout to perform sequential read test on %s\n\n", filename);
-	fprintf(stderr, "Disk size: %li GiB\n", disk_size_in_bytes / 1024 / 1024 / 1024);
+	fprintf(stderr, "Disk size: %jd GiB\n", (intmax_t)disk_size_in_bytes / 1024 / 1024 / 1024);
 	fprintf(stderr, "           %li MiB\n", disk_size_in_bytes / 1024 / 1024);
 	fprintf(stderr, "           %li kiB\n", disk_size_in_bytes / 1024);
-	fprintf(stderr, "           %lli bytes\n", disk_size_in_bytes);
+	fprintf(stderr, "           %jd bytes\n", (intmax_t)disk_size_in_bytes);
 	fprintf(stderr, "           %li %li-byte sectors\n\n", disk_size_in_sectors, SECTOR_SIZE);
 
 	fprintf(stderr, "Test parameters:\n");
 	fprintf(stderr, "  * Number of zones: %li\n", zone_count);
-	fprintf(stderr, "  * Transfer size: %li sectors\n", transfer_size_in_sectors);
+	fprintf(stderr, "  * Transfer size: %i sectors\n", transfer_size_in_sectors);
 	fprintf(stderr, "                   %li bytes\n", transfer_size_in_bytes);
 	fprintf(stderr, "                   %li kiB\n", transfer_size_in_bytes / 1024);
 	fprintf(stderr, "                   %li MiB\n", transfer_size_in_bytes / 1024 / 1024);
@@ -105,7 +104,7 @@ int main(int argc, char* argv[])
 		zone_midpoint_sector = (double)zone * (double)zone_size_in_sectors + (double)zone_size_in_sectors / 2.0;
 		
 		// Print midpoint sector of current test transfer:
-		printf("%li", zone_midpoint_sector);
+		printf("%lli", zone_midpoint_sector);
 		// Might make ploticus output easier if we just report the location as fraction of entire drive.
 		printf("\t%f", (double)zone_midpoint_sector / (double)disk_size_in_sectors);
 			

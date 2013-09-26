@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <stdint.h>
+
 
 #define SECTOR_SIZE 512L
 
@@ -26,10 +28,10 @@ int main(int argc, char* argv[])
 
 	off_t device_length_in_bytes = disksize(argv[1]);
 
-	printf("%s is %lli bytes\n", argv[1], device_length_in_bytes);
-	printf("%s is %lli sectors\n", argv[1], device_length_in_bytes / SECTOR_SIZE);
-	printf("%s is ~%lli MiB\n", argv[1], disksize(argv[1]) / 1024 / 1024);
-	printf("%s is ~%lli GiB\n", argv[1], device_length_in_bytes / 1024 / 1024 / 1024);
+	printf("%s is %jd bytes\n", argv[1], (intmax_t)device_length_in_bytes);
+	printf("%s is %jd sectors\n", argv[1], (intmax_t)device_length_in_bytes / SECTOR_SIZE);
+	printf("%s is ~%jd MiB\n", argv[1], (intmax_t)disksize(argv[1]) / 1024 / 1024);
+	printf("%s is ~%jd GiB\n", argv[1], (intmax_t)device_length_in_bytes / 1024 / 1024 / 1024);
 
 //	printf("test: %li\n", disksize(argv[1]));
 //	long disk_size_in_bytes = (long)disksize(argv[1]);

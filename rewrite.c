@@ -7,12 +7,13 @@
 #include <stdlib.h>	// For malloc()
 #include <fcntl.h>	// for open()
 #include <unistd.h>	// for lseek()
+#include <stdint.h>	// for intmax_t
 #include <time.h>
+
+#include "disksize.h"
 
 
 #define SECTOR_SIZE 512L
-
-extern off_t disksize(char* filename);
 
 
 int main(int argc, char* argv[])
@@ -43,7 +44,7 @@ int main(int argc, char* argv[])
 
 		byte = sector * SECTOR_SIZE;
 		
-		printf("\t%lli\n", byte);
+		printf("\t%jd\n", (intmax_t)byte);
 					
 		lseek(fd, byte, SEEK_SET);
 

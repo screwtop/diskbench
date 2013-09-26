@@ -20,11 +20,30 @@ Likely issues:
  - synchronous I/O: as much as possible, we want to test the performance of the storage device, not the cacheing ability of the operating system.
 
 
+Determining disk size:
+
+"position = lseek(f, 0L, SEEK_END)" seems to work fine on Linux and NetBSD, but not on Mac OS X (it returns 0).
+ioctl()?
+
+
+Printing values of "abstract" types:
+
+The printf() function provides a number of format specifiers, which relate to machine-level types.
+It seems that printing a value of a type such as off_t is essentially non-portable. :(
+Some C standards mention a "z" format specifier, and also "j".  There are also type-specific macros, e.g. 
+Another option may be to cast to the largest reasonable integer type (e.g. intmax_t or maybe unsigned long long) when passing the value to printf().
+See:
+https://www.securecoding.cert.org/confluence/display/seccode/INT15-C.+Use+intmax_t+or+uintmax_t+for+formatted+IO+on+programmer-defined+integer+types
+http://stackoverflow.com/questions/1401526/use-printf-to-display-off-t-nlink-t-size-t-and-others
+http://stackoverflow.com/questions/586928/how-should-i-print-types-like-off-t-and-size-t/587026#587026
+and others...
+
+
 Timing:
 
 <time.h> defines timespec, which has components tv_sec and tv_nsec for seconds and nanoseconds respectively.
 <bits/time.h> on Linux defines timeval, which has tv_sec and tv_usec for seconds and microseconds respectively.
-
+Mac OS X has no clock_gettime(). Use mach_absolute_time() instead, and use the Mach timebase facility to convert to seconds.
 
 
 Synchronous I/O:

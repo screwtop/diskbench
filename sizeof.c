@@ -2,11 +2,11 @@
 
 int main()
 {
-//	printf("sizeof(byte) = %i\n", sizeof(byte));
-	printf("sizeof(char) = %i\n", sizeof(char));
-	printf("sizeof(short) = %i\n", sizeof(short));
-	printf("sizeof(int) = %i\n", sizeof(int));
-	printf("sizeof(long) = %i\n", sizeof(long));
-	printf("sizeof(long long) = %i\n", sizeof(long long));
+//	printf("sizeof(byte) = %li\n", sizeof(byte));
+	printf("sizeof(char) = %li\n", sizeof(char));
+	printf("sizeof(short) = %li\n", sizeof(short));
+	printf("sizeof(int) = %li\n", sizeof(int));
+	printf("sizeof(long) = %li\n", sizeof(long));
+	printf("sizeof(long long) = %li\n", sizeof(long long));
 	return 0;
 }
