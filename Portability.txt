@@ -23,7 +23,7 @@ Likely issues:
 Determining disk size:
 
 "position = lseek(f, 0L, SEEK_END)" seems to work fine on Linux and NetBSD, but not on Mac OS X (it returns 0).
-ioctl()?
+http://stackoverflow.com/questions/9073614/open-raw-disk-and-get-size-os-x
 
 
 Printing values of "abstract" types:
@@ -34,6 +34,7 @@ Some C standards mention a "z" format specifier, and also "j".  There are also t
 Another option may be to cast to the largest reasonable integer type (e.g. intmax_t or maybe unsigned long long) when passing the value to printf().
 See:
 https://www.securecoding.cert.org/confluence/display/seccode/INT15-C.+Use+intmax_t+or+uintmax_t+for+formatted+IO+on+programmer-defined+integer+types
+http://www.embedded.com/electronics-blogs/programming-pointers/4007254/A-case-study-in-portability
 http://stackoverflow.com/questions/1401526/use-printf-to-display-off-t-nlink-t-size-t-and-others
 http://stackoverflow.com/questions/586928/how-should-i-print-types-like-off-t-and-size-t/587026#587026
 and others...
