@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 
 	printf("%s is %jd bytes\n", argv[1], (intmax_t)device_length_in_bytes);
 	printf("%s is %jd sectors\n", argv[1], (intmax_t)device_length_in_bytes / SECTOR_SIZE);
-	printf("%s is ~%jd MiB\n", argv[1], (intmax_t)disksize(argv[1]) / 1024 / 1024);
+	printf("%s is ~%jd MiB\n", argv[1], (intmax_t)device_length_in_bytes / 1024 / 1024);
 	printf("%s is ~%jd GiB\n", argv[1], (intmax_t)device_length_in_bytes / 1024 / 1024 / 1024);
 
 //	printf("test: %li\n", disksize(argv[1]));
