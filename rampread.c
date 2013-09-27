@@ -46,7 +46,8 @@ int main(int argc, char* argv[])
 	long transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
 	// For rampread, we probably want to vary this according to the transfer size so that it takes a similar amount of time for each size.
 	int transfer_size_exponent = 0;
-	double time_limit_in_seconds = 15.0;	// per sector size iteration
+	double time_limit_in_seconds = 5.0;
+//	double time_limit_in_seconds = 15.0;	// per sector size iteration
 	int repetitions = 0;
 
 	struct timeval seed;
