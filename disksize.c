@@ -64,5 +64,22 @@ off_t disksize (char* filename)
 	close(f);
 	return position;
 }
+
+// (Linux-only?) function for determining the block size of the medium.  Only applicable for block device special files, not ordinary files?
+// Also, BLKSSZGET vs BLKBSZGET?
+#include <sys/mount.h>
+size_t sectorsize (char* filename)
+{
+	size_t sector_size;
+	int fd = 0;
+	fd = open(filename, O_RDONLY);
+	if (fd == -1)
+	{
+		fprintf(stderr, "disksize.c: sectorsize(): Error opening file \"%s\"!\n", filename);
+		return 0;
+	}
+	int status = ioctl(fd, BLKSSZGET, &sector_size);
+	return status == 0 ? sector_size : 0;
+}
 #endif
 
