@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	off_t device_length_in_bytes = disksize(argv[1]);
 	size_t device_sector_size_in_bytes = sectorsize(argv[1]);
 
-	printf("%s sector size: %ju octets\n", argv[1], (uintmax_t)device_sector_size_in_bytes);
+	printf("%s physical sector size: %ju octets\n", argv[1], (uintmax_t)device_sector_size_in_bytes);
 
 	printf("%s is %jd bytes\n", argv[1], (intmax_t)device_length_in_bytes);
 	printf("%s is %jd sectors\n", argv[1], (intmax_t)device_length_in_bytes / SECTOR_SIZE);

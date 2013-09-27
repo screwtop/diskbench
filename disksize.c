@@ -66,7 +66,8 @@ off_t disksize (char* filename)
 }
 
 // (Linux-only?) function for determining the block size of the medium.  Only applicable for block device special files, not ordinary files?
-// Also, BLKSSZGET vs BLKBSZGET?
+// BLKSSZGET gives the logical sector size (probably always 512 bytes for a hard-disk-like device)
+// BLKBSZGET gives the physical sector size (increasingly 4096 bytes for DASDs, 2048 bytes for optical disc devices)
 #include <sys/mount.h>
 size_t sectorsize (char* filename)
 {
@@ -78,7 +79,7 @@ size_t sectorsize (char* filename)
 		fprintf(stderr, "disksize.c: sectorsize(): Error opening file \"%s\"!\n", filename);
 		return 0;
 	}
-	int status = ioctl(fd, BLKSSZGET, &sector_size);
+	int status = ioctl(fd, BLKBSZGET, &sector_size);
 	return status == 0 ? sector_size : 0;
 }
 #endif

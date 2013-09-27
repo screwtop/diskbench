@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sys/types.h>	// For off_t
 
 int main()
 {
