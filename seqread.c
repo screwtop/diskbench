@@ -25,11 +25,7 @@
 #include <errno.h>
 
 #include "diskbench_timing.h"
-
-
-// NOTE: The 512-byte sector size assumption won't always be true!  Storage industry is currently (2010) preparing to move to 4 kiB sectors.
-#define SECTOR_SIZE 4096L
-//#define SECTOR_SIZE 512L
+#include "disksize.h"
 
 
 int main(int argc, char* argv[])
@@ -38,12 +34,12 @@ int main(int argc, char* argv[])
 
 	// Determine size of file/device being tested:
 	off_t disk_size_in_bytes = disksize(filename);
-
-	long disk_size_in_sectors = disk_size_in_bytes / SECTOR_SIZE;
+	unsigned long sector_size = sectorsize(filename);
+	long disk_size_in_sectors = disk_size_in_bytes / sector_size;
 
 	long zone_count = 256;	// To be user-specified.
 	long zone_size_in_sectors = disk_size_in_sectors / zone_count;
-	long zone_size_in_bytes = zone_size_in_sectors * SECTOR_SIZE;
+	long zone_size_in_bytes = zone_size_in_sectors * sector_size;
 
 //	float zone_sampling_factor = 0.01;
 	// Maybe it makes more sense to specify what proportion of the disk you want to check, irrespective of the number of zones.
@@ -56,7 +52,7 @@ int main(int argc, char* argv[])
 //	int transfer_size_in_sectors = disk_size_in_sectors * disk_sampling_factor <= zone_size_in_sectors ? disk_size_in_sectors * disk_sampling_factor : zone_size_in_sectors;	// Newer sampling scheme, based on proportion of entire disk to be checked.  This should be forced to be less than the zone size.
 	// Or maybe it should be the closest power of 2 in sectors that's less than the zone size...
 	
-	long transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
+	long transfer_size_in_bytes = transfer_size_in_sectors * sector_size;
 	
 	double start_time, end_time;
 
@@ -69,7 +65,7 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "           %li MiB\n", disk_size_in_bytes / 1024 / 1024);
 	fprintf(stderr, "           %li kiB\n", disk_size_in_bytes / 1024);
 	fprintf(stderr, "           %jd bytes\n", (intmax_t)disk_size_in_bytes);
-	fprintf(stderr, "           %li %li-byte sectors\n\n", disk_size_in_sectors, SECTOR_SIZE);
+	fprintf(stderr, "           %li %lu-byte sectors\n\n", disk_size_in_sectors, sector_size);
 
 	fprintf(stderr, "Test parameters:\n");
 	fprintf(stderr, "  * Number of zones: %li\n", zone_count);
@@ -112,7 +108,7 @@ int main(int argc, char* argv[])
 		start_time = seconds_since_epoch();
 		
 		// Note: fseek() location is in bytes.  How do we do this on 32-bit systems?
-		lseek(fd, (zone_midpoint_sector - transfer_size_in_sectors / 2.0) * SECTOR_SIZE, SEEK_SET);
+		lseek(fd, (zone_midpoint_sector - transfer_size_in_sectors / 2.0) * sector_size, SEEK_SET);
 	//	perror("lseek() status");
 		
 		// Read a big chunk of data of a known size in one I/O:

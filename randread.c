@@ -18,9 +18,6 @@
 #include "diskbench_timing.h"
 #include "disksize.h"
 
-//#define SECTOR_SIZE 4096
-#define SECTOR_SIZE 512
-
 // See random (3)
 #define MAX_RAND_INT 2147483648
 
@@ -33,9 +30,10 @@ int main(int argc, char* argv[])
 	off_t disk_size_in_bytes = disksize(filename);
 	int i;
 	double start_time, end_time;
-	long disk_size_in_sectors = disk_size_in_bytes / SECTOR_SIZE;
+	unsigned long sector_size = sectorsize(filename);
+	long disk_size_in_sectors = disk_size_in_bytes / sector_size;
 	int transfer_size_in_sectors = 1;	// Probably doesn't make any sense to be anything other than 1.  Except maybe 64 or 128.
-	long transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
+	long transfer_size_in_bytes = transfer_size_in_sectors * sector_size;
 	int repetitions = 10000;
 
 	struct timeval seed;
@@ -62,7 +60,7 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "           %li MiB\n", disk_size_in_bytes / 1024 / 1024);
 	fprintf(stderr, "           %li kiB\n", disk_size_in_bytes / 1024);
 	fprintf(stderr, "           %lli bytes\n", (long long int)disk_size_in_bytes);
-	fprintf(stderr, "           %li %i-byte sectors\n\n", disk_size_in_sectors, SECTOR_SIZE);
+	fprintf(stderr, "           %li %lu-byte sectors\n\n", disk_size_in_sectors, sector_size);
 	
 	for (i = 0; i < repetitions; i++)
 	{
@@ -72,7 +70,7 @@ int main(int argc, char* argv[])
 		printf("%li", sector);
 
 		// Byte being sought:
-		printf("\t%lli", sector * (long long int)SECTOR_SIZE);
+		printf("\t%lli", sector * (long long int)sector_size);
 
 		// Location as a fraction of the entire drive space:
 		printf("\t%f", (double)sector / (double)disk_size_in_sectors);
@@ -82,7 +80,7 @@ int main(int argc, char* argv[])
 		start_time = seconds_since_epoch();
 		
 		// Note: fseek() location is in bytes.
-		lseek(fd, sector * (long)SECTOR_SIZE, SEEK_SET);
+		lseek(fd, sector * (long)sector_size, SEEK_SET);
 		
 		// Does it make any difference if we only read one byte, rather than the whole block?
 		read(fd, buf, transfer_size_in_bytes);

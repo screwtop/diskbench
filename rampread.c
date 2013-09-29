@@ -22,7 +22,8 @@
 
 // TODO: should this be varied automatically according to the underlying hardware?  At least parameterised on the command line.
 //#define SECTOR_SIZE 4096
-#define SECTOR_SIZE 512
+//#define SECTOR_SIZE 512
+// Now using a separate function to determine physical sector size.
 
 // These are in sectors, not bytes:
 // Hm, but maybe they should be in exponents of base 2, to make a for loop easier to write.
@@ -41,9 +42,10 @@ int main(int argc, char* argv[])
 	off_t disk_size_in_bytes = disksize(filename);
 	int i;
 	double start_time, end_time;
-	long disk_size_in_sectors = disk_size_in_bytes / SECTOR_SIZE;
+	unsigned long sector_size = sectorsize(filename);
+	long disk_size_in_sectors = disk_size_in_bytes / sector_size;
 	int transfer_size_in_sectors = 1 << START_TRANSFER_SIZE_EXPONENT;	// Probably doesn't make any sense to be anything other than 1.  Except maybe 64 or 128.
-	long transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
+	long transfer_size_in_bytes = transfer_size_in_sectors * sector_size;
 	// For rampread, we probably want to vary this according to the transfer size so that it takes a similar amount of time for each size.
 	int transfer_size_exponent = 0;
 	double time_limit_in_seconds = 5.0;
@@ -76,14 +78,14 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "           %li MiB\n", disk_size_in_bytes / 1024 / 1024);
 	fprintf(stderr, "           %li kiB\n", disk_size_in_bytes / 1024);
 	fprintf(stderr, "           %jd bytes\n", (intmax_t)disk_size_in_bytes);
-	fprintf(stderr, "           %li %i-byte sectors\n\n", disk_size_in_sectors, SECTOR_SIZE);
+	fprintf(stderr, "           %li %lu-byte sectors\n\n", disk_size_in_sectors, sector_size);
 	
 
 	// Loop through transfer sizes...
 	for (transfer_size_exponent = START_TRANSFER_SIZE_EXPONENT; transfer_size_exponent <= END_TRANSFER_SIZE_EXPONENT; transfer_size_exponent++)
 	{
 		transfer_size_in_sectors = 1 << transfer_size_exponent;
-		transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
+		transfer_size_in_bytes = transfer_size_in_sectors * sector_size;
 		buf = malloc(transfer_size_in_bytes);
 	//	repetitions = 500;
 	//	repetitions = 1 << (END_TRANSFER_SIZE_EXPONENT - transfer_size_exponent) + 0;
@@ -105,7 +107,7 @@ int main(int argc, char* argv[])
 			sector = random() / block_scaling_factor;
 			
 			// Note: fseek() location is in bytes.
-			lseek(fd, sector * (long)SECTOR_SIZE, SEEK_SET);
+			lseek(fd, sector * sector_size, SEEK_SET);
 			
 			read(fd, buf, transfer_size_in_bytes);
 	//	}

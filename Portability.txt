@@ -25,6 +25,10 @@ Determining disk size:
 "position = lseek(f, 0L, SEEK_END)" seems to work fine on Linux and NetBSD, but not on Mac OS X (it returns 0).
 http://stackoverflow.com/questions/9073614/open-raw-disk-and-get-size-os-x
 
+Determining physical sector size of disk:
+On Linux, the BLK*SZGET ioctls don't quite seem to work.  I think they return filesystem-level block information, not physical medium info.  There is a libblkid that apparently fdisk uses (and that clearly gets it right).  "sudo apt-get install libblkid-dev" on Debian/Ubuntu.
+On Mac OS X, the DKIOCGETBLOCKSIZE ioctl should be the one to use.
+
 
 Printing values of "abstract" types:
 

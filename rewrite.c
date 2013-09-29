@@ -13,21 +13,18 @@
 #include "disksize.h"
 
 
-#define SECTOR_SIZE 512L
-
-
 int main(int argc, char* argv[])
 {
 	char* filename = argv[1];
 
 	// Determine size of file/device being tested:
 	off_t disk_size_in_bytes = disksize(filename);
-
-	long disk_size_in_sectors = disk_size_in_bytes / SECTOR_SIZE;
+	unsigned long sector_size = sectorsize(filename);
+	long disk_size_in_sectors = disk_size_in_bytes / sector_size;
 
 	int transfer_size_in_sectors = 1;
 	
-	long transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
+	long transfer_size_in_bytes = transfer_size_in_sectors * sector_size;
 	
 	long sector = 0;
 	
@@ -42,7 +39,7 @@ int main(int argc, char* argv[])
 	{
 		printf("\t%f", (double)sector / (double)disk_size_in_sectors);
 
-		byte = sector * SECTOR_SIZE;
+		byte = sector * sector_size;
 		
 		printf("\t%jd\n", (intmax_t)byte);
 					

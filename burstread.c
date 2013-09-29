@@ -8,8 +8,7 @@
 #include <time.h>
 
 #include "diskbench_timing.h"
-
-#define SECTOR_SIZE 512
+#include "disksize.h"
 
 
 int main(int argc, char* argv[])
@@ -17,8 +16,9 @@ int main(int argc, char* argv[])
 	char* filename = argv[1];
 	int i;
 	int repetitions = 500;
+	unsigned long sector_size = sectorsize(filename);
 	int transfer_size_in_sectors = 128;	// This needs to be small enough to fit in the cache.
-	long transfer_size_in_bytes = transfer_size_in_sectors * SECTOR_SIZE;
+	long transfer_size_in_bytes = transfer_size_in_sectors * sector_size;
 	double start_time, end_time;
 	char * buf = malloc(transfer_size_in_bytes);
 	FILE* fd = fopen(filename, "r");

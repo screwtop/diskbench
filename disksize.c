@@ -44,6 +44,20 @@ off_t disksize (char* filename)
 //	uint64_t DiskSize = (uint64_t)sector_count * (uint64_t)sector_size_in_bytes;
 }
 
+size_t sectorsize (char* filename)
+{
+	size_t sector_size_in_bytes;
+	int f = 0;
+	f = open(filename, O_RDONLY);
+	if (f == -1) {
+		fprintf(stderr, "disksize.c: disksize(): Error opening file \"%s\"!\n", filename);
+		return 0;
+	} else {
+		int status = ioctl(f, DKIOCGETBLOCKSIZE, &sector_size_in_bytes);
+		return status == 0 ? sector_size_in_bytes : 0;
+	}
+}
+
 
 #else
 
@@ -68,19 +82,39 @@ off_t disksize (char* filename)
 // (Linux-only?) function for determining the block size of the medium.  Only applicable for block device special files, not ordinary files?
 // BLKSSZGET gives the logical sector size (probably always 512 bytes for a hard-disk-like device)
 // BLKBSZGET gives the physical sector size (increasingly 4096 bytes for DASDs, 2048 bytes for optical disc devices)
+// ...only it seems to give 4096 bytes when it shouldn't.  Is it maybe returning the filesystem block size, not the physical or logical disk block size?!
+// fdisk gets it right; how does it do that, then?
+// fdisk -l /dev/sda (SSD): 512 B logical, 4096 B physical, 4096 B min I/O, 4096 B optimal I/O
+// fdisk -l /dev/sdb (HDD): 512, 512, 512, 512
+// fdisk -l /dev/sdc (HDD): 512, 512, 512, 512
+// Ah, OK, fdisk uses libblkid.  Let's try that then...
+
 #include <sys/mount.h>
+#include <sys/ioctl.h>
+#include <blkid/blkid.h>
 size_t sectorsize (char* filename)
 {
-	size_t sector_size;
+	unsigned long sector_size = 0;
 	int fd = 0;
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
 	{
 		fprintf(stderr, "disksize.c: sectorsize(): Error opening file \"%s\"!\n", filename);
 		return 0;
+	} else {
+		// Use libblkid to probe the device's physical sector size...
+		blkid_probe probe;
+		probe = blkid_new_probe();
+		if (probe && blkid_probe_set_device(probe, fd, 0, 0) == 0) {
+			blkid_topology tp = blkid_probe_get_topology(probe);
+			if (tp) {
+				sector_size = blkid_topology_get_physical_sector_size(tp);
+			}
+		}
+		blkid_free_probe(probe);
+
+		return sector_size;
 	}
-	int status = ioctl(fd, BLKBSZGET, &sector_size);
-	return status == 0 ? sector_size : 0;
 }
 #endif
 
