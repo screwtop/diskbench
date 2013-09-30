@@ -19,7 +19,8 @@
 // TODO: maybe check and act accordingly, using the ioctl code below if it's a block device, and the seek-style code at the end if it's an ordinary file.
 
 #if defined __APPLE__ && defined __MACH__
-#include <ioctl.h>
+#include <sys/ioctl.h>
+#include <sys/disk.h>
 
 off_t disksize (char* filename)
 {
