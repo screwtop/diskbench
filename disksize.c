@@ -24,8 +24,8 @@
 
 off_t disksize (char* filename)
 {
-	long long sector_count, sector_size_in_bytes;
-	off_t position;
+	unsigned long long sector_count;
+	uint32_t sector_size_in_bytes;
 	int f = 0;
 	f = open(filename, O_RDONLY);
 	if (f == -1)
@@ -36,25 +36,24 @@ off_t disksize (char* filename)
 
 	// Query the number of sectors on the disk
 	ioctl(f, DKIOCGETBLOCKCOUNT, &sector_count);
-
-	unsigned int SectorSize = 0;
+	
 	// Query the size of each sector
-	ioctl(f, DKIOCGETBLOCKSIZE, &sector_size_in_bytes);
+	ioctl(f, DKIOCGETPHYSICALBLOCKSIZE, &sector_size_in_bytes);
 
-	return sector_count * sector_size_in_bytes;
+	return (uintmax_t)sector_count * (uintmax_t)sector_size_in_bytes;
 //	uint64_t DiskSize = (uint64_t)sector_count * (uint64_t)sector_size_in_bytes;
 }
 
 size_t sectorsize (char* filename)
 {
-	size_t sector_size_in_bytes;
+	uint32_t sector_size_in_bytes;
 	int f = 0;
 	f = open(filename, O_RDONLY);
 	if (f == -1) {
 		fprintf(stderr, "disksize.c: disksize(): Error opening file \"%s\"!\n", filename);
 		return 0;
 	} else {
-		int status = ioctl(f, DKIOCGETBLOCKSIZE, &sector_size_in_bytes);
+		int status = ioctl(f, DKIOCGETPHYSICALBLOCKSIZE, &sector_size_in_bytes);
 		return status == 0 ? sector_size_in_bytes : 0;
 	}
 }
