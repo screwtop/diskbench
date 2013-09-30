@@ -1,11 +1,26 @@
 CC=gcc
-# libraries
-# MAC OS X
-# DISKSIZE_LIBS=
-# TIMING_LIBS=
-# everything else (?)
-DISKSIZE_LIBS=-lblkid
-TIMING_LIBS=-lrt
+
+
+# libraries:
+
+OS=$(shell uname -o)
+
+ifeq ($(OS),Darwin)
+	# MAC OS X
+	DISKSIZE_LIBS=
+	TIMING_LIBS=
+else ifeq ($(OS),GNU/Linux)
+	DISKSIZE_LIBS=-lblkid
+	TIMING_LIBS=-lrt
+else ifeq ($(OS),NetBSD)
+	DISKSIZE_LIBS=
+	TIMING_LIBS=-lrt
+else
+	# everything else (?)
+	DISKSIZE_LIBS=
+	TIMING_LIBS=-lrt
+endif
+
 
 PROGRAMS=randread burstread seqread rampread disksize-test rewrite sizeof timing_test
 
