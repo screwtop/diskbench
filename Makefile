@@ -1,7 +1,11 @@
 CC=gcc
+# libraries
+# MAC OS X
+# DISKSIZE_LIBS=
+# TIMING_LIBS=
+# everything else (?)
 DISKSIZE_LIBS=-lblkid
 TIMING_LIBS=-lrt
-
 
 PROGRAMS=randread burstread seqread rampread disksize-test rewrite sizeof timing_test
 
