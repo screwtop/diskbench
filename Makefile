@@ -67,7 +67,12 @@ sizeof: sizeof.c
 
 		
 # pl -maxrows 15000 -png -o wd1200jb-random.png access-times-scatter.ploticus
-		
+
+# TODO: R
+# assuming output from randread > data.txt
+#   data<-read.table( "data.txt" )
+#   hist( data[[4]], breaks=400, xlim=c(0,35) )
+# or something like that
 
 
 .PHONY: clean
