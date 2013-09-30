@@ -1,0 +1,8 @@
+burstread
+disksize-test
+rampread
+randread
+rewrite
+seqread
+sizeof
+timing_test

@@ -1,0 +1,5 @@
+* Add a priming read to each benchmark program to ensure the disk is spun up before the testing starts.
+
+* Port to NetBSD and Cygwin again! :)
+
+* Figure out how to (portably) bypass all the caching to do direct I/O on the disk (good luck!).
