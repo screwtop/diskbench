@@ -47,10 +47,17 @@ int main(int argc, char* argv[])
 	gettimeofday(&seed, NULL);
 	srandom(seed.tv_usec);
 
-	char* buf = malloc(transfer_size_in_bytes);
+//	char* buf = malloc(transfer_size_in_bytes);
+	void* buf;
+	int memalign_status = posix_memalign(&buf, 512, transfer_size_in_bytes);
+	if (memalign_status != 0) {
+		perror("Error allocating aligned buffer memory.");
+		exit(EXIT_FAILURE);
+	}
 
-	int fd = open(filename, O_RDONLY);
-//	int fd = open(filename, O_RDONLY | O_DIRECT);
+
+//	int fd = open(filename, O_RDONLY);
+	int fd = open(filename, O_RDONLY | O_DIRECT);
 //	int fd = open(filename, O_RDONLY | O_DIRECT | O_SYNC);
 	off_t sector = 0;
 	double elapsed_time_in_seconds = 0;

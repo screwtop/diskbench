@@ -58,7 +58,14 @@ int main(int argc, char* argv[])
 
 	int zone = 0;
 	
-	char * buf = malloc(transfer_size_in_bytes);
+//	char * buf = malloc(transfer_size_in_bytes);
+	void* buf;
+	int memalign_status = posix_memalign(&buf, 512, transfer_size_in_bytes);
+	if (memalign_status != 0) {
+		perror("Error allocating aligned buffer memory.");
+		exit(EXIT_FAILURE);
+	}
+
 
 	fprintf(stderr, "\nAbout to perform sequential read test on %s\n\n", filename);
 	fprintf(stderr, "Disk size: %jd GiB\n", (intmax_t)disk_size_in_bytes / 1024 / 1024 / 1024);
@@ -85,10 +92,10 @@ int main(int argc, char* argv[])
 	// Also, perhaps O_LARGEFILE?
 //	int fd = open(filename, O_RDONLY | O_DIRECT | O_LARGEFILE);
 //	int fd = open(filename, O_RDONLY | O_DIRECT | O_SYNC);
-//	int fd = open(filename, O_RDONLY | O_DIRECT);
-	int fd = open(filename, O_RDONLY);
+	int fd = open(filename, O_RDONLY | O_DIRECT);
+//	int fd = open(filename, O_RDONLY);
 
-        // NOTE: consider sys_fadvise64_64() here, perhaps with FADV_NOREUSE.
+	// NOTE: consider sys_fadvise64_64() here, perhaps with FADV_NOREUSE.
 
 	// TODO: Check that the file was opened successfully, and bail out if not.
 	if (fd == -1) {return_code = errno; perror("Error open()ing file"); return return_code;}
@@ -133,4 +140,3 @@ int main(int argc, char* argv[])
 	close(fd);
 	return 0;
 }
-

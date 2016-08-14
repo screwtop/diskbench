@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <time.h>
 // #include <sys/time.h>
+#include <errno.h>
 
 #include "disksize.h"
 #include "diskbench_timing.h"
@@ -63,14 +64,35 @@ int main(int argc, char* argv[])
 	gettimeofday(&seed, NULL);
 	srandom(seed.tv_usec);
 
-	char* buf = malloc(transfer_size_in_bytes);
+//	char* buf = malloc(transfer_size_in_bytes);
+	void* buf; // Data are read from disk into here.
 
-	int fd = open(filename, O_RDONLY);
-//	int fd = open(filename, O_RDONLY | O_DIRECT);
+/*
+ * With neither O_DIRECT nor O_SYNC, devices such as flash-based USB/MMC storage and SATA SSDs show a strange discontinuity in read speeds between 128 sectors/transfer and 256 sectors/transfer.
+ * O_DIRECT only gives ridiculously high I/O rates (like, over 2M IOPS for USB SD card or USB-attached HDD), as if it's being read out of cache.
+ * O_SYNC only seems to give reasonable results, but still shows the same discontinuity as with neither option.
+ * O_DIRECT | O_SYNC shows the same stupidly high I/O rates, so it's clearly this option that causes this. Strange, because I would have thought that direct I/O is what we want when benchmarking the underlying storage behaviour.
+ * With O_DIRECT, the data read seems to be a uniform repeating pattern of 5 or 6 bytes.
+ * See also https://lwn.net/Articles/457667/
+* TODO: consider using ioctl(2) BLKSSZGET to determine logical block size (on Linux); see disksize.c
+* `blockdev --getss` also
+* Ah, it was returning an error on read() with O_DIRECT because the buffer memory aligment wasn't correct.  On Linux 2.6, alignment to 512 bytes is sufficient. Not sure about other platforms yet.
+* Not sure if O_SYNC is relevant for read-only tests.
+* With O_DIRECT specified (and proper read memory alignment), the transfer rate discontinuity is not observed, and transfer rates are reasonable.  This discontinuity probably does show something interesting about the behaviour of the Linux block cache, however...maybe should take this up with kernel devs.
+ */
+//	int fd = open(filename, O_RDONLY);
+	int fd = open(filename, O_RDONLY | O_DIRECT);
+//	int fd = open(filename, O_RDONLY | O_SYNC);
 //	int fd = open(filename, O_RDONLY | O_DIRECT | O_SYNC);
+//	int fd = open(filename, O_DIRECT);
+
+	if (fd < 0) {
+		perror("Error opening file!\n");
+		exit(EXIT_FAILURE);
+	}
+
 	off_t sector = 0;
 	double elapsed_time_in_seconds = 0;
-
 
 
 	fprintf(stderr, "\nAbout to perform random access test on %s\n\n", filename);
@@ -86,7 +108,13 @@ int main(int argc, char* argv[])
 	{
 		transfer_size_in_sectors = 1 << transfer_size_exponent;
 		transfer_size_in_bytes = transfer_size_in_sectors * sector_size;
-		buf = malloc(transfer_size_in_bytes);
+	//	buf = malloc(transfer_size_in_bytes);
+		int memalign_status = posix_memalign(&buf, 512, transfer_size_in_bytes);
+		if (memalign_status != 0) {
+			perror("Error allocating aligned buffer memory.");
+			exit(EXIT_FAILURE);
+		}
+
 	//	repetitions = 500;
 	//	repetitions = 1 << (END_TRANSFER_SIZE_EXPONENT - transfer_size_exponent) + 0;
 	//	repetitions = (int) round((1<<23) / (double)transfer_size_in_bytes) + 40;
@@ -109,7 +137,14 @@ int main(int argc, char* argv[])
 			// Note: fseek() location is in bytes.
 			lseek(fd, sector * sector_size, SEEK_SET);
 			
-			read(fd, buf, transfer_size_in_bytes);
+			int read_result = read(fd, buf, transfer_size_in_bytes);
+
+			// Oh, what if there's an error using O_DIRECT, but it occurs after the read(), not the open()?
+			if (read_result < 0) {
+				perror("Read error!");
+				return -1;
+			}
+
 	//	}
 
 			// Record the time after finishing all the reads to determine the elapsed time.
@@ -140,4 +175,3 @@ int main(int argc, char* argv[])
 	close(fd);
 	return 0;
 }
-
