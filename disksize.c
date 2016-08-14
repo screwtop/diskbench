@@ -6,8 +6,9 @@
 
 // Weird: the return value of this seems to get mangled when passed to the calling env.  Maybe a truncation problem.
 // Ah, C automatically declares unknown functions as returning int.  You need to put a stub declaration in the other file ("extern long disksize(char* filename);").
-// I guess this file should have a companion header file or something, right?
+// TODO: I guess this file should have a companion header file or something, right?
 
+// TODO: consider using ioctl BLKSSZGET on Linux to determine logical block size?  No, apparently I already tried that and libblkid proved more reliable.
 
 #include <stdio.h>
 #include <stdlib.h>
