@@ -8,7 +8,10 @@
 // Ah, C automatically declares unknown functions as returning int.  You need to put a stub declaration in the other file ("extern long disksize(char* filename);").
 // TODO: I guess this file should have a companion header file or something, right?
 
+// TODO: what to do when the reported sector size is 0 (e.g. when testing a regular file)?  Set it to 1 byte?  512 bytes?
+
 // TODO: consider using ioctl BLKSSZGET on Linux to determine logical block size?  No, apparently I already tried that and libblkid proved more reliable.
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,7 +61,7 @@ size_t sectorsize (char* filename)
 		return 0;
 	} else {
 		int status = ioctl(f, DKIOCGETPHYSICALBLOCKSIZE, &sector_size_in_bytes);
-		return status == 0 ? sector_size_in_bytes : 0;
+		return status == 0 ? sector_size_in_bytes : 512;
 	}
 }
 
@@ -125,6 +128,8 @@ size_t sectorsize (char* filename)
 			}
 		}
 		blkid_free_probe(probe);
+
+		if (sector_size == 0) {sector_size = 512;}
 
 		return sector_size;
 	}
