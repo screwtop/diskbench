@@ -3,3 +3,6 @@
 * Port to NetBSD and Cygwin again! :)
 
 * Figure out how to (portably) bypass all the caching to do direct I/O on the disk (good luck!).
+
+* Check for and notify about blkid library dependency on Linux
+
