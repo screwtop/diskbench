@@ -71,14 +71,14 @@
 			<footnote><para>You can sacrifice capacity for performance when partitioning a drive.  The data at the outside edge of a disk will generally experience faster sequential data rates (perhaps 2x the speed of the inside edge), so using a small slice of the disk will effectively give a small, fast disk.  This will also benefit access times and random I/O performance, since the read/write head need only move within a much smaller region of the disk.</para></footnote>
 		, and not comparable with other systems.</para>
 
-		<para>On NetBSD, you must use the raw disk device special file, e.g. <filename>/dev/rwd0d</filename> rather than <filename>/dev/wd0d</filename>, otherwise the results will be quite wrong.</para>
+		<para>On NetBSD (and BSD systems in general, probably), you must use the raw (unbuffered, character) disk device special file, e.g. <filename>/dev/rwd0d</filename> rather than <filename>/dev/wd0d</filename>, otherwise the results for sequential transfers will be quite wrong.</para>
 
 		<para>If you have no idea what device filename to use, try one of these:</para>
 
 		<itemizedlist>
 			<listitem><simpara>Linux:	<filename>/dev/sda</filename> or <filename>/dev/hda</filename></simpara></listitem>
 			<listitem><simpara>NetBSD:	<filename>/dev/rwd0d</filename> or <filename>/dev/rsd0d</filename></simpara></listitem>
-			<!--listitem>Mac OS X:	<filename>/dev/???</filename></listitem-->
+			<listitem>Mac OS X:	<filename>/dev/rdisk0</filename></listitem>
 			<!--listitem>MINIX 3: 	<filename>/dev/c0d0p0s0</filename>???</listitem-->
 		</itemizedlist>
 
@@ -110,4 +110,3 @@
 	</sect1>
 
 </article>
-
