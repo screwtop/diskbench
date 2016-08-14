@@ -59,6 +59,11 @@ int main(int argc, char* argv[])
 //	int fd = open(filename, O_RDONLY);
 	int fd = open(filename, O_RDONLY | O_DIRECT);
 //	int fd = open(filename, O_RDONLY | O_DIRECT | O_SYNC);
+	if (fd < 0) {
+		perror("Error opening file");
+		exit(EXIT_FAILURE);
+	}
+
 	off_t sector = 0;
 	double elapsed_time_in_seconds = 0;
 	

@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 //	FILE* fd = fopen(filename, "r");
 	int fd = open(filename, O_RDONLY | O_DIRECT);
 	if (fd < 0) {
-		perror("Error opening file!\n");
+		perror("Error opening file");
 		exit(EXIT_FAILURE);
 	}
 

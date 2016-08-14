@@ -79,6 +79,7 @@ int main(int argc, char* argv[])
 * Ah, it was returning an error on read() with O_DIRECT because the buffer memory aligment wasn't correct.  On Linux 2.6, alignment to 512 bytes is sufficient. Not sure about other platforms yet.
 * Not sure if O_SYNC is relevant for read-only tests.
 * With O_DIRECT specified (and proper read memory alignment), the transfer rate discontinuity is not observed, and transfer rates are reasonable.  This discontinuity probably does show something interesting about the behaviour of the Linux block cache, however...maybe should take this up with kernel devs.
+* Hmm, further problem: O_DIRECT isn't supported on ordinary files, only device special files.  So, TODO: determine whether the file is special or ordinary, and only attempt O_DIRECT access if special.
  */
 //	int fd = open(filename, O_RDONLY);
 	int fd = open(filename, O_RDONLY | O_DIRECT);
@@ -87,7 +88,7 @@ int main(int argc, char* argv[])
 //	int fd = open(filename, O_DIRECT);
 
 	if (fd < 0) {
-		perror("Error opening file!\n");
+		perror("Error opening file");
 		exit(EXIT_FAILURE);
 	}
 

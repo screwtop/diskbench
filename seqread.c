@@ -97,8 +97,8 @@ int main(int argc, char* argv[])
 
 	// NOTE: consider sys_fadvise64_64() here, perhaps with FADV_NOREUSE.
 
-	// TODO: Check that the file was opened successfully, and bail out if not.
-	if (fd == -1) {return_code = errno; perror("Error open()ing file"); return return_code;}
+	// Check that the file was opened successfully, and bail out if not.
+	if (fd < 0) {return_code = errno; perror("Error open()ing file"); return return_code;}
 
 //	sys_fadvise64_64();
 	
