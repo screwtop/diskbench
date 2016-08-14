@@ -3,13 +3,14 @@ CC=gcc
 
 # libraries:
 
-OS=$(shell uname -o)
+# NOTE: Mac OS X's uname doesn't support "-o" (any more?).  With no args, the default is to print the kernel name, not the OS name.
+OS=$(shell uname)
 
 ifeq ($(OS),Darwin)
 	# MAC OS X
 	DISKSIZE_LIBS=
 	TIMING_LIBS=
-else ifeq ($(OS),GNU/Linux)
+else ifeq ($(OS),Linux)
 	DISKSIZE_LIBS=-lblkid
 	TIMING_LIBS=-lrt
 else ifeq ($(OS),NetBSD)

@@ -12,7 +12,11 @@
 
 		<caution><simpara>This is currently a work-in-progress and should be considered alpha-quality.  Don&#8217;<!--&rsquo;--><!--&apos;--><!--apos/--><!--apostrophe/-->t expect it to work, and use at your own risk!</simpara></caution>
 
-		<!-- TODO: add cross-reference to the Concepts document. -->
+		<!-- TODO:
+			[ ] Add cross-reference to the Concepts document
+			[ ] Add dependencies/requirements section, including blkid library (sudo apt-get install libblkid-dev)
+			[ ] Investigate/document platform-specific capabilities such as O_DIRECT
+		 -->
 
 	</sect1>
 

@@ -9,7 +9,7 @@
 #include <stdlib.h>	// For malloc().
 #include <time.h>
 #include <fcntl.h>	// for O_DIRECT et al.
-#include <error.h>
+#include <errno.h>
 
 #include "diskbench_timing.h"
 #include "disksize.h"
