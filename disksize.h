@@ -4,3 +4,4 @@
 
 off_t disksize (char* filename);
 size_t sectorsize (char* filename);
+int diskbench_open(const char* filename);

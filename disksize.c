@@ -1,5 +1,6 @@
 // $Id: disksize.c,v 1.2 2007/03/18 10:19:30 cedwards Exp $
 // Functions for determining the physical sector size and total size of a device.
+// Also now has platform-specific implementations of opening a file in "direct I/O" mode, i.e. minimal cache effects.
 // Used as support functions by the other diskbench utilities, which need to know these things (for sequential rate and random access time tests).
 // disksize() returns the size of the file/device in bytes (as an off_t).
 // sectorsize() returns the size of a physical sector ("block").
@@ -146,3 +147,49 @@ size_t sectorsize (char* filename)
 }
 
 #endif
+
+
+
+
+int diskbench_open(const char* filename) {
+/*
+ * With neither O_DIRECT nor O_SYNC, devices such as flash-based USB/MMC storage and SATA SSDs show a strange discontinuity in read speeds between 128 sectors/transfer and 256 sectors/transfer.
+ * O_DIRECT only gives ridiculously high I/O rates (like, over 2M IOPS for USB SD card or USB-attached HDD), as if it's being read out of cache.
+ * O_SYNC only seems to give reasonable results, but still shows the same discontinuity as with neither option.
+ * O_DIRECT | O_SYNC shows the same stupidly high I/O rates, so it's clearly this option that causes this. Strange, because I would have thought that direct I/O is what we want when benchmarking the underlying storage behaviour.
+ * With O_DIRECT, the data read seems to be a uniform repeating pattern of 5 or 6 bytes.
+ * See also https://lwn.net/Articles/457667/
+ * TODO: consider using ioctl(2) BLKSSZGET to determine logical block size (on Linux); see disksize.c
+ * `blockdev --getss` also
+ * Ah, it was returning an error on read() with O_DIRECT because the buffer memory aligment wasn't correct.  On Linux 2.6, alignment to 512 bytes is sufficient. Not sure about other platforms yet.
+ * Not sure if O_SYNC is relevant for read-only tests.
+ * With O_DIRECT specified (and proper read memory alignment), the transfer rate discontinuity is not observed, and transfer rates are reasonable.  This discontinuity probably does show something interesting about the behaviour of the Linux block cache, however...maybe should take this up with kernel devs.
+ * Hmm, further problem: O_DIRECT isn't supported on ordinary files, only device special files.  So, TODO: determine whether the file is special or ordinary, and only attempt O_DIRECT access if special.
+ * Also, perhaps O_LARGEFILE?
+ */
+#if defined __linux__ || defined __NetBSD__
+//	int fd = open(filename, O_RDONLY);
+	int fd = open(filename, O_RDONLY | O_DIRECT);
+//	int fd = open(filename, O_RDONLY | O_SYNC);
+//	int fd = open(filename, O_RDONLY | O_DIRECT | O_SYNC);
+//	int fd = open(filename, O_DIRECT);
+#endif /* Linux, NetBSD */
+#if defined __APPLE__ && defined __MACH__
+	int fd = open(filename, O_RDONLY);
+#endif /* Mac OS X */
+
+	if (fd < 0) {
+		perror("Error opening file");
+		exit(EXIT_FAILURE);
+	}
+	
+#if defined __APPLE__ && defined __MACH__
+	int fcntl_status = fcntl(fd, F_NOCACHE);
+	if (fcntl_status < 0) {
+		perror("Error setting O_NOCACHE");
+		exit(EXIT_FAILURE);
+	}
+#endif /* Mac OS X */
+
+	return fd;
+}
