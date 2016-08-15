@@ -6,6 +6,7 @@
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <stdint.h>
+#include <sys/time.h>
 
 // Mac OS X lacks the clock_gettime() call, but has mach_absolute_time() instead, which should be just as good.
 
