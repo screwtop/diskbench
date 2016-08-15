@@ -13,6 +13,7 @@
 
 // TODO: consider using ioctl BLKSSZGET on Linux to determine logical block size?  No, apparently I already tried that and libblkid proved more reliable.
 
+#define _GNU_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
