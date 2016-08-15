@@ -51,7 +51,7 @@ Timing:
 Mac OS X has no clock_gettime(). Use mach_absolute_time() instead, and use the Mach timebase facility to convert to seconds.
 
 
-Synchronous I/O:
+Direct and/or Synchronous I/O:
 
 O_DSYNC not available in Cygwin?
 	open()ing a file with O_DSYNC means that write operations return when the data (but not necessarily the metadata) have been written.
@@ -73,7 +73,10 @@ O_DSYNC
 
 Linux raw(8) interface: deprecated
 
-Mac OS X: call fnctl() with F_NOCACHE
+Mac OS X:
+ 	No O_DIRECT support for open() in 10.9
+	Use /dev/rdiskN instead of /dev/diskN
+	Call fnctl() with F_NOCACHE?
 
 
 Ideally we would use O_DSYNC for the benchmarking programs, but the overhead of writing metadata and inode data is probably negligible.  It looks like O_SYNC will be appropriate.
