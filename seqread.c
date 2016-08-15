@@ -89,11 +89,7 @@ int main(int argc, char* argv[])
 	
 	int read_result = 0, return_code = 0;
 	
-	// Also, perhaps O_LARGEFILE?
-//	int fd = open(filename, O_RDONLY | O_DIRECT | O_LARGEFILE);
-//	int fd = open(filename, O_RDONLY | O_DIRECT | O_SYNC);
-	int fd = open(filename, O_RDONLY | O_DIRECT);
-//	int fd = open(filename, O_RDONLY);
+	int fd = diskbench_open(filename);
 
 	// NOTE: consider sys_fadvise64_64() here, perhaps with FADV_NOREUSE.
 

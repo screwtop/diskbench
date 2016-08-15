@@ -32,12 +32,7 @@ int main(int argc, char* argv[])
 		exit(EXIT_FAILURE);
 	}
 
-//	FILE* fd = fopen(filename, "r");
-	int fd = open(filename, O_RDONLY | O_DIRECT);
-	if (fd < 0) {
-		perror("Error opening file");
-		exit(EXIT_FAILURE);
-	}
+	int fd = diskbench_open(filename);
 
 	for (i = 0; i < repetitions; i++)
 	{
