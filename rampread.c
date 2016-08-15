@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <time.h>
+#include <sys/time.h>	// for gettimeofday (used only for seeding the RNG)
 #include <errno.h>
 
 #include "disksize.h"
@@ -58,8 +59,7 @@ int main(int argc, char* argv[])
 	double block_scaling_factor = (double)MAX_RAND_INT / (double)disk_size_in_sectors;
 	//fprintf(stderr, "block scaling factor = %f\n", block_scaling_factor);
 	
-	// Warning: seeding with 0 will result in the same I/O pattern, potentially giving bogus results on multiple runs.
-	//srandom(0);
+	// Seed the random-number generator from current time to avoid repetitive I/O patterns that could be affected by cacheing.
 	gettimeofday(&seed, NULL);
 	srandom(seed.tv_usec);
 
