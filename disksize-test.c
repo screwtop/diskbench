@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <stdint.h>
 
+#include "disksize.h"
 
 #define SECTOR_SIZE 512L
 
