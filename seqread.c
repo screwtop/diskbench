@@ -69,8 +69,8 @@ int main(int argc, char* argv[])
 
 	fprintf(stderr, "\nAbout to perform sequential read test on %s\n\n", filename);
 	fprintf(stderr, "Disk size: %jd GiB\n", (intmax_t)disk_size_in_bytes / 1024 / 1024 / 1024);
-	fprintf(stderr, "           %li MiB\n", disk_size_in_bytes / 1024 / 1024);
-	fprintf(stderr, "           %li kiB\n", disk_size_in_bytes / 1024);
+	fprintf(stderr, "           %lli MiB\n", disk_size_in_bytes / 1024 / 1024);
+	fprintf(stderr, "           %lli kiB\n", disk_size_in_bytes / 1024);
 	fprintf(stderr, "           %jd bytes\n", (intmax_t)disk_size_in_bytes);
 	fprintf(stderr, "           %li %lu-byte sectors\n\n", disk_size_in_sectors, sector_size);
 

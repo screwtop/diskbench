@@ -34,7 +34,8 @@ int main(int argc, char* argv[])
 	long disk_size_in_sectors = disk_size_in_bytes / sector_size;
 	int transfer_size_in_sectors = 1;	// Probably doesn't make any sense to be anything other than 1.  Except maybe 64 or 128.
 	long transfer_size_in_bytes = transfer_size_in_sectors * sector_size;
-	int repetitions = 10000;
+	// TODO: initial random I/O test to determine number of repetitions based on random I/O rate. Or just stop after a certain elapsed time!
+	int repetitions = 1000;
 
 	struct timeval seed;
 
@@ -61,18 +62,21 @@ int main(int argc, char* argv[])
 	double elapsed_time_in_seconds = 0;
 	
 	fprintf(stderr, "\nAbout to perform random access test on %s\n\n", filename);
-	fprintf(stderr, "Disk size: %li GiB\n", disk_size_in_bytes / 1024 / 1024 / 1024);
-	fprintf(stderr, "           %li MiB\n", disk_size_in_bytes / 1024 / 1024);
-	fprintf(stderr, "           %li kiB\n", disk_size_in_bytes / 1024);
-	fprintf(stderr, "           %lli bytes\n", (long long int)disk_size_in_bytes);
+	fprintf(stderr, "Disk size: %lli GiB\n", disk_size_in_bytes / 1024 / 1024 / 1024);
+	fprintf(stderr, "           %lli MiB\n", disk_size_in_bytes / 1024 / 1024);
+	fprintf(stderr, "           %lli kiB\n", disk_size_in_bytes / 1024);
+	fprintf(stderr, "           %jd bytes\n", (intmax_t)disk_size_in_bytes);
 	fprintf(stderr, "           %li %lu-byte sectors\n\n", disk_size_in_sectors, sector_size);
+
+	// Heading for output:
+	fprintf(stderr, "sector\tbyte\tfraction\ttime(ms)\trate(MiB/s)\n");
 	
 	for (i = 0; i < repetitions; i++)
 	{
 		sector = random() / block_scaling_factor;
 		
 		// Sector being sought:
-		printf("%li", sector);
+		printf("%lli", sector);
 
 		// Byte being sought:
 		printf("\t%lli", sector * (long long int)sector_size);

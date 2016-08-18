@@ -73,9 +73,9 @@ int main(int argc, char* argv[])
 
 
 	fprintf(stderr, "\nAbout to perform random access test on %s\n\n", filename);
-	fprintf(stderr, "Disk size: %li GiB\n", disk_size_in_bytes / 1024 / 1024 / 1024);
-	fprintf(stderr, "           %li MiB\n", disk_size_in_bytes / 1024 / 1024);
-	fprintf(stderr, "           %li kiB\n", disk_size_in_bytes / 1024);
+	fprintf(stderr, "Disk size: %lli GiB\n", disk_size_in_bytes / 1024 / 1024 / 1024);
+	fprintf(stderr, "           %lli MiB\n", disk_size_in_bytes / 1024 / 1024);
+	fprintf(stderr, "           %lli kiB\n", disk_size_in_bytes / 1024);
 	fprintf(stderr, "           %jd bytes\n", (intmax_t)disk_size_in_bytes);
 	fprintf(stderr, "           %li %lu-byte sectors\n\n", disk_size_in_sectors, sector_size);
 	
