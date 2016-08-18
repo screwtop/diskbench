@@ -12,7 +12,7 @@
 #include <stdlib.h>	// For malloc()
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdint.h>
+#include <stdint.h>     // for intmax_t
 #include <time.h>
 #include <sys/time.h>	// for gettimeofday (used only for seeding the RNG)
 #include <errno.h>
